@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Gauss Compacta</title>
+	 <meta charset="utf-8">
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" charset="utf-8">
+      function gausscompacta(){
+
+        
+        var list = [];
+        dimensao = parseInt(document.getElementById("dimensao").value);
+        matriz = document.getElementById("matriz").value;
+        var numsStr = matriz.replace(/^0|^[\+|\-]?[1-9][0-9]/, ' ');
+        var matriz2 = [];
+        var num = numsStr.split(' ');
+        var L, U;
+
+
+        //console.log(num);
+        var count = 0;
+        for (var i = 0; i < num.length; i++) {
+          if (num[i] != '{' && num[i] != '}' && num[i] != '')
+          { 
+            list[count] = num[i];
+            count++;
+            //console.log(list[count]);
+          }
+        }
+
+
+       for (var i = 0; i < list.length; i++) {
+         matriz2[i] = parseFloat(list[i]);
+       }
+
+       var matriz3 = new Array();
+       matriz3 = splity(matriz2, 3);
+      console.log(splity(matriz2, 3));
+
+
+      function splity(array, cols) {
+        var ret = [];
+        if (cols==1 || array.length === 1){
+          ret.push(array);
+        }else{
+          var size = Math.ceil(array.length / cols);
+          for (var i = 0; i < cols; i++) {
+            var start = i*size;
+            ret.push(array.slice(start, start+size));
+          }
+        }
+        return ret;
+      }
+
+      console.log(matriz2)
+      b1=(matriz3[1][0]/matriz3[0][0]);
+      b2=(matriz3[2][0]/matriz3[0][0]);
+
+      for(var i=0;i<3;i++){
+        
+        matriz3[1][i]=matriz3[1][i]-(b1*matriz3[0][i]); // 2ª linha da matriz A
+        matriz3[2][i]=matriz3[2][i]-(b2*matriz3[0][i]); // 3ª linha da matriz A
+      }
+
+
+
+      b3=matriz3[2][1]/matriz3[1][1];
+
+      for(var i=0;i<dimensao;i++){
+        matriz3[2][i]=matriz3[2][i]-(b3*matriz3[1][i]);
+        if((matriz3[2][i] < 0.001 && matriz3[2][i] > 0) || (matriz3[2][i] > -0.001 && matriz3[2][i] < 0)) 
+          matriz3[2][i] = 0; // 3ª linha da matriz A 2ª vez
+      }
+
+      L=[[1,0,0],[b1,1,0],[b2,b3,1]]; //FATOR L, MATRIZ LOWER TRIANGULAR INFERIOR
+
+      U=[[matriz3[0][0],matriz3[0][1],matriz3[0][2]],[matriz3[1][0],matriz3[1][1],matriz3[1][2]],[matriz3[2][0],matriz3[2][1],matriz3[2][2]]]; //FATOR U, MATRIZ UPPER TRIANGULAR SUPERIOR
+
+      console.log(L + "LLLLLL");
+      console.log("\n\n")
+      console.log(U + "UUUUUUu");
+
+
+      matrizL = splity(L, dimensao);
+      matrizU = splity(U, dimensao);
+
+
+      for (var i = 0; i < matrizL.length; i++) {
+          document.getElementById('resultadoL').value = document.getElementById('resultadoL').value + ' { ' + matrizL[i] + ' } ';   
+
+      }
+
+      for (var i = 0; i < matrizU.length; i++) {
+          document.getElementById('resultadoU').value = document.getElementById('resultadoU').value + ' { ' + matrizU[i] + ' } ';   
+
+      }
+
+
+    }
+  </script>
+
+</head>
+<body style="background-image: url(https://www.kampocesku.cz/jpg/galerie/velky/21647_Image00084.jpg);">
+<div class="header">
+      <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#js-navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+           <a class="navbar-brand" style="font-family: FreeMono;" href="index.html">Cálculo Numérico</a>
+          </div>
+          <div class="collapse navbar-collapse" id="js-navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li  style="font-family: FreeMono;"><a href="CHOLESKY.html">Cholesky</a></li>
+              <li style="font-family: FreeMono;"><a href="SEIDEL.html">Gauss Seidel</a></li>
+               <li  style="font-family: FreeMono;"><a href="JACOBI.html">Jacobi</a></li>
+               <li class="active" style="font-family: FreeMono;"><a href="GAUSS.html">Gauss</a></li>
+
+            </ul>
+          </div>
+        </div>  
+     
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="row">
+    <div class="container">
+		<div class="jumbotron" style="width: 300px; margin-left: 35%; background-color:  #DCDCDC;">
+			<div class="form-group" style="width: 240px;  margin-left: -30px;">
+			  <label for="usr" style="font-family: FreeMono; margin-top: -20px;">Valores a serem convertidos:</label>
+			  <input type="text" maxlength="1" onkeypress='return event.charCode >= 50 && event.charCode <= 56'  placeholder="Ex: Dimensão 3" id="dimensao" class="form-control" style="margin-bottom: 10px;">
+
+
+        <input type="text" maxlength="200" id="matriz" name="matriz"  class="form-control" value="{ 9 5 4 } { 4 5 -98 } { -1 -2 -3 }"  size="20">
+
+
+			  <button type="button" class="btn container" style="margin-top: 30px; background-color: #80aaff;" onclick="gausscompacta()"><div style="font-family: FreeMono; color: white;"> Converter </div></button>
+			</div>
+	</div>  
+</div>  
+
+<div class="row">
+    <div class="container">
+		<div class="jumbotron" style="margin-top: -10px; position: relative; width: 300px; height: 230px; margin-left: 35%; background-color:  #DCDCDC;">
+		<label for="usr" style="font-family: FreeMono;">L:</label>
+		<input id="resultadoL" class="form-control" style="margin-bottom: 20px;" type="text" style="margin-top: 0px;"> 
+
+    <label for="usr" style="font-family: FreeMono;">U:</label>
+    <input id="resultadoU" class="form-control" type="text" style="margin-top: 0px;">
+
+		</div>	
+	</div>  
+</div>  
+
+
+
+
+</body>
+</html>

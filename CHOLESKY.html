@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html  ng-app="myApp" >
+<head>
+	<title>Cholesky</title>
+	 <meta charset="utf-8">
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="require.js"></script>
+<script src="cholesky.bundle.js"></script>
+<script src="cholesky.js"></script>
+
+
+  <script type="text/javascript">
+
+
+    function cholesky() {
+
+          var list = [];
+          dimensao = parseInt(document.getElementById("dimensao").value);
+          matriz = document.getElementById("matriz").value;
+          var numsStr = matriz.replace(/^0|^[\+|\-]?[1-9][0-9]/, ' ');
+          var matriz2 = [];
+          var num = numsStr.split(' ');
+
+
+          //console.log(num);
+          var count = 0;
+          for (var i = 0; i < num.length; i++) {
+            if (num[i] != '{' && num[i] != '}' && num[i] != '')
+            { 
+              list[count] = num[i];
+              count++;
+              console.log(list[count]);
+            }
+          }
+
+
+         for (var i = 0; i < list.length; i++) {
+           matriz2[i] = parseFloat(list[i]);
+         }
+
+
+        console.log(splity(matriz2, dimensao));
+
+
+        function splity(array, cols) {
+          var ret = [];
+          if (cols==1 || array.length === 1){
+            ret.push(array);
+          }else{
+            var size = Math.ceil(array.length / cols);
+            for (var i = 0; i < cols; i++) {
+              var start = i*size;
+              ret.push(array.slice(start, start+size));
+            }
+          }
+          return ret;
+        }
+
+
+
+      //arrayentrada = [4, 2, -4, 2, 10, 4, -4, 4, 9]; 
+      //dimensao =  [3, 3]; 
+//[[16, -4, 12, -4], [-4, 2, -1, 1], [12, -1, 14, -2], [-4, 1, -2, 83]]
+//{ 16 -4 12 -4 } { -4 2 -1 1 } { 12 -1 14 -2 } { -4 1 -2 83 }
+
+        var tri = cholesky(splity(matriz2, dimensao));
+        console.log(tri);
+
+      var sil = false;
+
+      for(var i=0; i< dimensao; i++){
+          for(var j = 0; j< dimensao; j++){
+            if(typeof tri[i][j] === "undefined"){
+                tri[i][j] = 0;
+                console.log(tri[i][j]);
+                //sil = true;
+                //console.log(sil);
+            }
+          }      
+        //sil = false;
+      }
+      console.log(tri);
+
+      for(var i=0; i< dimensao; i++){
+          for(var j = 0; j< dimensao; j++){
+            if(isNaN(tri[i][j])){
+                sil = true;
+                console.log(sil);
+            }
+          }      
+        //sil = false;
+      }
+
+      if (sil == true) document.getElementById('syl').value = 'Não atende ao critério de Sylvester';
+      else document.getElementById('syl').value = 'Atende ao critério';
+
+
+
+      function cholesky(matrix) {
+        var len = matrix.length,
+            res = Array(len)
+        if (matrix.length !== matrix[len-1].length) throw Error('Input matrix must be square or lower triangle')
+
+        res[0] = [Math.sqrt( matrix[0][0] )]
+
+        for (var i = 1; i<len; ++i) {
+          res[i] = Array(i+1) // lower triangle
+          for (var j = 0; j < i; ++j) {
+            res[i][j] = delta(matrix[i][j], res, i, j) / res[j][j]
+          }
+          res[i][i] = Math.sqrt(delta(matrix[i][i], res, i, i))
+        }
+        return res
+      }
+
+      function delta(aij, res, i, j) {
+        for (var k=0, sum=aij; k<j; ++k) if (res[i][k]) sum -= res[i][k] * res[j][k]
+        return sum
+      }
+
+      for (var i = 0; i < tri.length; i++) {
+          document.getElementById('resultado').value = document.getElementById('resultado').value + ' { ' + tri[i] + ' } ';   
+
+      }
+
+    //document.getElementById('resultado').value = tri[0] + ' - ' + tri[1];
+
+
+}
+
+  </script>
+</head>
+<body  ng-controller="MyCtrl" style="background-image: url(https://www.kampocesku.cz/jpg/galerie/velky/21647_Image00084.jpg);">
+<div class="header">
+      <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#js-navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+           <a class="navbar-brand" style="font-family: FreeMono;" href="index.html">Cálculo Numérico</a>
+          </div>
+          <div class="collapse navbar-collapse" id="js-navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li class="active" style="font-family: FreeMono;"><a href="CHOLESKY.html">Cholesky</a></li>
+              <li style="font-family: FreeMono;"><a href="SEIDEL.html">Gauss Seidel</a></li>
+               <li style="font-family: FreeMono;"><a href="JACOBI.html">Jacobi</a></li>
+               <li style="font-family: FreeMono;"><a href="GAUSS.html">Gauss</a></li>
+
+            </ul>
+          </div>
+        </div>  
+     
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="row">
+    <div class="container">
+		<div class="jumbotron" style="width: 300px; margin-left: 35%; background-color:  #DCDCDC;">
+			<div class="form-group" style="width: 240px;  margin-left: -30px;">
+			  <label for="usr" style="font-family: FreeMono; margin-top: -20px;">Dimensão:</label>
+			  <input type="text" maxlength="1" onkeypress='return event.charCode >= 50 && event.charCode <= 56' placeholder="Ex: Dimensão 3" id="dimensao" class="form-control" style="margin-bottom: 10px;">
+
+        <label for="usr" style="font-family: FreeMono; margin-top: -20px;">Matriz:</label>
+
+        <input type="text" maxlength="200" id="matriz" name="matriz"  class="form-control" value="{ 16 -4 12 -4 } { -4 2 -1 1 } { 12 -1 14 -2 } { -4 1 -2 83 }"  size="20">
+
+
+			  <button type="button" class="btn container" style="margin-top: 30px; background-color: #80aaff;" onclick="cholesky()"><div style="font-family: FreeMono; color: white;"> Converter </div></button>
+			</div>
+	</div>  
+</div>  
+
+<div class="row">
+    <div class="container">
+		<div class="jumbotron" style="margin-top: -10px; position: relative; width: 300px; height: 240px; margin-left: 35%;; background-color:  #DCDCDC;">
+		<label for="usr" style="font-family: FreeMono;">Resultado:</label>
+		<input id="resultado" class="form-control" type="text" style="margin-bottom: 20px;"> 
+    <label for="usr" style="font-family: FreeMono;">Criterio de Sylvester:</label>
+    <input id="syl" class="form-control" type="text" style="margin-bottom: 0px;"> 
+		</div>	
+	</div>  
+</div>  
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Jacobi</title>
+	 <meta charset="utf-8">
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="require.js"></script>
+
+  <script type="text/javascript">
+
+
+  	function jacobi() {
+
+
+      var a = parseInt(document.getElementById("a").value);
+      var b = document.getElementById("b").value
+      var sol = document.getElementById("sol").value
+      var est = document.getElementById("est").value
+      var tol = parseFloat(document.getElementById("tol").value);
+      var m = parseFloat(document.getElementById("m").value);
+
+
+
+  var numsStr = b.replace(/^0|^[\+|\-]?[1-9][0-9]/, ' ');
+  var sol = sol.replace(/^0|^[\+|\-]?[1-9][0-9]/, ' ');
+  var est = est.replace(/^0|^[\+|\-]?[1-9][0-9]/, ' ');
+
+
+    var matriz2 = [];
+    var sol2 = [];
+    var est2 = [];
+
+    var num = numsStr.split(' ');
+    var sol = sol.split(' ');
+    var est = est.split(' ');
+
+
+    var list = [];
+    var list2 = []; 
+    var list3 = [];
+
+      //console.log(num);
+      var count = 0;
+      for (var i = 0; i < num.length; i++) {
+        if (num[i] != '{' && num[i] != '}' && num[i] != '')
+        { 
+          list[count] = num[i];
+          count++;
+          //console.log(list[count]);
+        }
+
+      }
+
+      var count = 0;
+      for (var i = 0; i < sol.length; i++) {
+        if (sol[i] != '{' && sol[i] != '}' && sol[i] != '')
+        { 
+          list2[count] = sol[i];
+          count++;
+          //console.log(list2[count]);
+        }
+
+      }
+
+      var count = 0;
+      for (var i = 0; i < est.length; i++) {
+        if (est[i] != '{' && est[i] != '}' && est[i] != '')
+        { 
+          list3[count] = est[i];
+          count++;
+          //console.log(list[count]);
+        }
+
+      }
+
+
+
+
+    for (var i = 0; i < list.length; i++) {
+      matriz2[i] = parseFloat(list[i]);
+    }
+
+    for (var i = 0; i < list2.length; i++) {
+      sol2[i] = parseFloat(list2[i]);
+    }
+
+    for (var i = 0; i < list3.length; i++) {
+      est2[i] = parseFloat(list3[i]);
+    }
+
+    console.log(splity(matriz2, a));
+    console.log(splity(sol2, a));
+    console.log(est2);
+
+    solucao = splity(sol2, a);
+    matrizA = splity(matriz2, a);
+
+
+    function splity(array, cols) {
+      var ret = [];
+      if (cols==1 || array.length === 1){
+        ret.push(array);
+      }else{
+        var size = Math.ceil(array.length / cols);
+        for (var i = 0; i < cols; i++) {
+          var start = i*size;
+          ret.push(array.slice(start, start+size));
+        }
+      }
+      return ret;
+    }
+
+
+    ///////////////////////////ENTRADA TRATADA ACIMA, AGORA PODEMOS FAZER OS CALCULOS
+
+  var matrizfinal = new Array();
+
+
+  console.log(gaussJacobi(matrizA, solucao, tol, m, est2));
+
+    var table = document.getElementById('tabela-numValores');
+    var row;
+    table.innerHTML="<tr></tr><tr></tr>";
+
+  for (var i = 0; i < m; i++) {
+    matrizfinal[i] = gaussJacobi(matrizA, solucao, tol, i+1, est2);
+    console.log(matrizfinal[i] + " ITERAÇAO " + i);
+
+    row = table.insertRow(i+1);
+    row.innerHTML = '<td class="col-sm-4">' + (i+1) + '</td>  <td class="col-sm-8">' + '(' + matrizfinal[i] + ')' + '</td>';
+
+  }
+
+  var erroabs = [];
+  for (var i = 0; i < 3; i++) {
+    console.log("Erro Absoluto = " + erroAbsoluto(matrizfinal[m-1][i], matrizfinal[m-2][i]));
+    erroabs[i] = erroAbsoluto(matrizfinal[m-1][i], matrizfinal[m-2][i]);
+  }
+
+  document.getElementById('resultadox').value = erroabs[0];
+  document.getElementById('resultadoy').value = erroabs[1];
+  document.getElementById('resultadoz').value = erroabs[2];
+
+  document.getElementById('linha').value = criterioDasLinhas(matrizA);
+  document.getElementById('coluna').value = criterioDasColunas(matrizA);
+
+
+  criterioDasLinhas(matrizA);
+  criterioDasColunas(matrizA);
+
+
+  function gaussJacobi(A, b, E, m, X) {
+
+    var x = new Array();
+
+
+    var ni = 0;//Contador de iterações
+    var continuar = true;
+
+    while (continuar && ni < m) {
+        for (var i=0; i < b.length; i++) {
+      soma = 0;
+      for (var j = 0; j < b.length; j++) {
+          if (j != i) {
+              soma = soma + A[i][j]*X[j]/A[i][i];
+          }
+          x[i] = (b[i]/A[i][i]) - soma;
+      }
+      }
+        if (Math.abs(Math.abs(x) - Math.abs(X)) < E) {
+      continuar = false;
+      } else {
+      X=x.slice(0);
+      }
+        ni = ni + 1;
+    }
+    return X;
+  }
+
+  function erroAbsoluto(x1, x2){
+    var eAbs;
+    if(typeof x2 === 'undefined')
+      x2 = 0;
+    eAbs = x1-x2;
+    return Math.abs(eAbs);
+
+  }
+
+  function criterioDasLinhas(A){
+    var a1, a2, a3;
+    a1 = (Math.abs(A[0][1]) + Math.abs(A[0][2]))/Math.abs(A[0][0]);
+    a2 = (Math.abs(A[1][0]) + Math.abs(A[1][2]))/Math.abs(A[1][1]);
+    a3 = (Math.abs(A[2][1]) + Math.abs(A[2][0]))/Math.abs(A[2][2]);
+    if(a1 < 1 && a2 < 1 && a3 < 1){
+      console.log("Convergente!");
+      return 'Convergente'
+    } else {
+      console.log("Divergente!");
+      return 'Divergente'
+    }
+  }
+
+  function criterioDasColunas(A){
+    var a1, a2, a3;
+    a1 = (Math.abs(A[1][0]) + Math.abs(A[2][0]))/Math.abs(A[0][0]);
+    a2 = (Math.abs(A[0][1]) + Math.abs(A[2][1]))/Math.abs(A[1][1]);
+    a3 = (Math.abs(A[0][2]) + Math.abs(A[1][2]))/Math.abs(A[2][2]);
+    if(a1 < 1 && a2 < 1 && a3 < 1){
+      console.log("Convergente!");
+      return 'Convergente'
+    } else {
+      console.log("Divergente!");
+      return 'Divergente'
+    }
+
+  }
+
+
+   	}
+
+  </script>
+</head>
+<body style="background-image: url(https://www.kampocesku.cz/jpg/galerie/velky/21647_Image00084.jpg);">
+<div class="header">
+      <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#js-navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+           <a class="navbar-brand" style="font-family: FreeMono;" href="index.html">Cálculo Numérico</a>
+          </div>
+          <div class="collapse navbar-collapse" id="js-navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li  style="font-family: FreeMono;"><a href="CHOLESKY.html">Cholesky</a></li>
+              <li style="font-family: FreeMono;"><a href="SEIDEL.html">Gauss Seidel</a></li>
+               <li class="active" style="font-family: FreeMono;"><a href="JACOBI.html">Jacobi</a></li>
+               <li style="font-family: FreeMono;"><a href="GAUSS.html">Gauss</a></li>
+
+            </ul>
+          </div>
+        </div>  
+     
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="row">
+    <div class="container">
+		<div class="jumbotron" style="width: 300px; margin-left: 18%; background-color:  #DCDCDC;">
+			<div class="form-group" style="width: 240px;  margin-left: -30px;">
+			  <label for="usr" style="font-family: FreeMono; margin-top: -20px;">Dimensão da matriz:</label>
+			  <input type="text" maxlength="1" onkeypress='return event.charCode >= 50 && event.charCode <= 56'  placeholder="Ex: Dimensão 3" id="a" value="3" class="form-control" style="margin-bottom: 10px;">
+ <label for="usr" style="font-family: FreeMono;">Coloque a matriz:</label>
+            <input type="text" placeholder="(Ex: 10)" id="b" size="4" class="form-control" value="{ 10 2 1 } { 1 5 1 } { 2 3 10 }" style="margin-bottom: 10px;">
+
+        <label for="usr" style="font-family: FreeMono;">Coloque a solução do vetor:</label>
+            <input type="text" placeholder="(Ex: 10)" id="sol" size="4" value="{ 7 } { -8 } { 6 }" class="form-control" style="margin-bottom: 10px;">
+
+        <label for="usr" style="font-family: FreeMono;">Coloque a estimativa inicial:</label>
+            <input type="text" placeholder="(Ex: 10)" id="est" size="4" value="{ 0.7 } { -1.6 } { 0.6 }" class="form-control" style="margin-bottom: 10px;">
+
+        <label for="usr" style="font-family: FreeMono;">Coloque a tolerância:</label>
+            <input type="text" placeholder="(Ex: 10)" id="tol" value="0.05" size="4" class="form-control" style="margin-bottom: 20px;">
+
+        <label for="usr" style="font-family: FreeMono;">Coloque o numero máximo de iterações:</label>
+            <input type="number" placeholder="(Ex: 10)" id="m" value="3" size="4" class="form-control" style="margin-bottom: 20px;">
+
+
+
+			  <button type="button" class="btn container" style="margin-top: 30px; background-color: #80aaff;" onclick="jacobi()"><div style="font-family: FreeMono; color: white;"> Converter </div></button>
+			</div>
+	</div>  
+</div>  
+
+<div class="row">
+    <div class="container">
+    <div class="jumbotron" style="margin-top: -665px; position: relative; width: 400px; height: 635px; margin-left: 49%; background-color:  #DCDCDC;">
+          <div class="container">
+ <label for="usr" style="font-family: FreeMono;">Erro de x:</label>
+      <input id="resultadox" class="form-control" type="text" style="margin-bottom: 40px;"> 
+
+   <label for="usr" style="font-family: FreeMono;">Erro de y:</label>
+      <input id="resultadoy" class="form-control" type="text" style="margin-bottom: 40px;"> 
+
+   <label for="usr" style="font-family: FreeMono;">Erro de z:</label>
+      <input id="resultadoz" class="form-control" type="text" style="margin-bottom: 40px;"> 
+
+      <label for="usr" style="font-family: FreeMono;">Criterio de linha:</label>
+      <input id="linha" class="form-control" type="text" style="margin-bottom: 40px;">
+
+      <label for="usr" style="font-family: FreeMono;">Criterio de coluna:</label>
+      <input id="coluna" class="form-control" type="text" style="margin-bottom: 40px;"> 
+      </div>
+    </div>  
+  </div>  
+</div>  
+
+
+<div class="row">
+    <div class="container">
+    <div class="jumbotron" style="margin-top: -10px; position: absolute; width: 745px; margin-left: 210px; height: 400px; background-color: #DCDCDC;">
+
+    <div class="container">
+        <table class="table table-striped" style="margin-top: 15px">
+          <thead>
+            <tr>
+              <th class="col-sm-4"> Iteração</th>
+              <th  class="col-sm-8">Valores</th>
+            </tr>
+          </thead> 
+        </table>
+    </div>
+    <div class="container" style="width:600px; height:200px; overflow:auto;">
+        <table class="table table-striped" id="tabela-numValores">
+            <tr></tr>
+        </table>
+    </div>
+    </div>  
+  </div>  
+</div>  
+
+
+
+
+
+</body>
+</html>
